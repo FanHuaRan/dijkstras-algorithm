@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Dijkstras
@@ -68,7 +69,8 @@ namespace Dijkstras
                     }
                 }
             }
-
+            //add the start point
+            path.Add(start);
             return path;
         }
     }
@@ -86,8 +88,75 @@ namespace Dijkstras
             g.add_vertex('F', new Dictionary<char, int>() {{'B', 2}, {'C', 6}, {'D', 8}, {'G', 9}, {'H', 3}});
             g.add_vertex('G', new Dictionary<char, int>() {{'C', 4}, {'F', 9}});
             g.add_vertex('H', new Dictionary<char, int>() {{'E', 1}, {'F', 3}});
-
-            g.shortest_path('A', 'H').ForEach( x => Console.WriteLine(x) );
+            var paths = g.shortest_path('A', 'H');
+            //use our iteration for out put
+            IterationSample itSample = new IterationSample(paths);
+            foreach (var value in itSample)
+            {
+                Console.WriteLine(value);
+            }
+            // out put is A B F H
+            Console.ReadLine();
         }
     }
+    #region Our Iterator for --
+    class IterationSample : IEnumerable
+    {
+        public List<char> values;
+        public Int32 startingPoint;
+        public IterationSample(List<char> values, Int32 startingPoint)
+        {
+            this.values = values;
+            this.startingPoint = startingPoint;
+        }
+        public IterationSample(List<char> values)
+        {
+            this.values = values;
+            this.startingPoint = 0;
+        }
+        public IEnumerator GetEnumerator()
+        {
+            return new IterationSampleEnumerator(this);
+        }
+    }
+    class IterationSampleEnumerator : IEnumerator
+    {
+        IterationSample parent;
+        Int32 position;
+        internal IterationSampleEnumerator(IterationSample parent)
+        {
+            this.parent = parent;
+            position = parent.values.Count;
+        }
+
+        public bool MoveNext()
+        {
+            if (position != -1) 
+            {
+                position--;
+            }
+            return position >-1;
+        }
+
+        public object Current
+        {
+            get
+            {
+                if (position == -1 || position == parent.values.Count)
+                {
+                    throw new InvalidOperationException();
+                }
+                Int32 index = position + parent.startingPoint;
+                index = index % parent.values.Count;
+                return parent.values[index];
+            }
+        }
+
+        public void Reset()
+        {
+            position = parent.values.Count;
+        }
+    }
+    
+    #endregion
 }
