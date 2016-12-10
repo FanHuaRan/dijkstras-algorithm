@@ -114,7 +114,6 @@ class Graph {
 		final Map<Character, Integer> distances = new HashMap<Character, Integer>();
 		final Map<Character, Vertex> previous = new HashMap<Character, Vertex>();
 		PriorityQueue<Vertex> nodes = new PriorityQueue<Vertex>();
-		
 		for(Character vertex : vertices.keySet()) {
 			if (vertex == start) {
 				distances.put(vertex, 0);
@@ -125,16 +124,15 @@ class Graph {
 			}
 			previous.put(vertex, null);
 		}
-		
+		final List<Character> path = new ArrayList<Character>();
 		while (!nodes.isEmpty()) {
 			Vertex smallest = nodes.poll();
 			if (smallest.getId() == finish) {
-				final List<Character> path = new ArrayList<Character>();
 				while (previous.get(smallest.getId()) != null) {
 					path.add(smallest.getId());
 					smallest = previous.get(smallest.getId());
 				}
-				return path;
+				break;
 			}
 
 			if (distances.get(smallest.getId()) == Integer.MAX_VALUE) {
@@ -159,8 +157,10 @@ class Graph {
 				}
 			}
 		}
-		
-		return new ArrayList<Character>(distances.keySet());
+		// add start 
+		path.add(start);
+		return path;
+		//return new ArrayList<Character>(distances.keySet());
 	}
 	
 }
